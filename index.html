@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Exam Saga: Realm of Knowledge</title>
+  <title>Exam Saga: Chapter Quest</title>
   <style>
     :root {
       --bg-color: #0f172a;
@@ -20,7 +20,7 @@
       background-color: var(--bg-color);
       color: var(--text);
       margin: 0;
-      padding: 20px;
+      padding: 15px;
       display: flex;
       justify-content: center;
     }
@@ -35,16 +35,16 @@
       border: 2px solid #334155;
     }
 
-    /* Header & Stats Bar */
+    /* Status Bar */
     .status-bar {
       display: flex;
       justify-content: space-between;
       align-items: center;
       background: #0f172a;
-      padding: 15px;
+      padding: 12px 15px;
       border-radius: 8px;
       border: 1px solid #334155;
-      margin-bottom: 20px;
+      margin-bottom: 15px;
     }
 
     .character-info {
@@ -62,22 +62,56 @@
       font-size: 0.8rem;
     }
 
+    /* Chapter Selector Controls */
+    .filter-card {
+      background: #0f172a;
+      padding: 15px;
+      border-radius: 8px;
+      border: 1px solid #334155;
+      margin-bottom: 15px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .select-box {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .select-box label {
+      font-size: 0.8rem;
+      color: var(--accent);
+      font-weight: bold;
+    }
+
+    select {
+      background: #1e293b;
+      color: white;
+      border: 1px solid #475569;
+      padding: 10px;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      outline: none;
+    }
+
+    /* Tabs */
     .nav-tabs {
       display: flex;
       gap: 10px;
-      margin-bottom: 20px;
+      margin-bottom: 15px;
     }
 
     .tab-btn {
       flex: 1;
-      padding: 12px;
+      padding: 10px;
       background: #334155;
       border: none;
       color: white;
       font-weight: bold;
       border-radius: 6px;
       cursor: pointer;
-      transition: 0.3s;
     }
 
     .tab-btn.active {
@@ -91,14 +125,13 @@
       padding: 20px;
       border-radius: 8px;
       border: 1px solid #334155;
-      margin-bottom: 15px;
     }
 
     .origin-tag {
       display: inline-block;
       background: #3b82f6;
       color: white;
-      padding: 3px 8px;
+      padding: 4px 8px;
       border-radius: 4px;
       font-size: 0.75rem;
       margin-bottom: 10px;
@@ -120,14 +153,8 @@
       border-radius: 6px;
       text-align: left;
       cursor: pointer;
-      font-size: 0.95rem;
     }
 
-    .option-btn:hover {
-      border-color: var(--accent);
-    }
-
-    /* Feedback & Solution */
     .analysis-box {
       margin-top: 15px;
       padding: 15px;
@@ -149,7 +176,7 @@
       background: var(--accent-gold);
       color: black;
       border: none;
-      padding: 10px 20px;
+      padding: 10px 16px;
       border-radius: 6px;
       font-weight: bold;
       cursor: pointer;
@@ -162,37 +189,51 @@
 <body>
 
 <div class="game-container">
-  <!-- Status Header -->
+  <!-- Gamification Bar -->
   <div class="status-bar">
     <div class="character-info">
-      <span style="font-size: 1.8rem;">🧙‍♂️</span>
+      <span style="font-size: 1.5rem;">🧙‍♂️</span>
       <div>
         <strong>Scholar Lvl <span id="player-level">1</span></strong>
-        <div style="font-size: 0.8rem; color: #94a3b8;">XP: <span id="player-xp">0</span> / 100</div>
+        <div style="font-size: 0.75rem; color: #94a3b8;">XP: <span id="player-xp">0</span> / 100</div>
       </div>
     </div>
-    <div>
-      <span class="badge" id="subject-badge">Class 11 & 12 Syllabus</span>
+    <span class="badge">NCERT & NTA Syllabus</span>
+  </div>
+
+  <!-- Subject & Chapter Selection Dashboard -->
+  <div class="filter-card">
+    <div class="select-box">
+      <label>1. SELECT SUBJECT</label>
+      <select id="subject-select" onchange="updateChapterOptions()">
+        <option value="Biology">Biology</option>
+        <option value="Physics">Physics</option>
+        <option value="Chemistry">Chemistry</option>
+      </select>
+    </div>
+    <div class="select-box">
+      <label>2. SELECT CHAPTER</label>
+      <select id="chapter-select" onchange="filterQuestions()"></select>
     </div>
   </div>
 
-  <!-- Navigation -->
+  <!-- Section Mode Tabs -->
   <div class="nav-tabs">
-    <button class="tab-btn active" onclick="switchMode('objective')">Objective Realm (PYQs/MCQs)</button>
-    <button class="tab-btn" onclick="switchMode('subjective')">Subjective Sanctum (Boards)</button>
+    <button class="tab-btn active" id="tab-obj" onclick="switchMode('objective')">Objective (Quizzes/PYQs)</button>
+    <button class="tab-btn" id="tab-subj" onclick="switchMode('subjective')">Subjective (Boards)</button>
   </div>
 
   <!-- Objective Section -->
   <div id="objective-section">
     <div class="card">
-      <span class="origin-tag" id="obj-tag">NEET 2022 | Class 11 Biology</span>
-      <h3 id="obj-question">Loading Question...</h3>
+      <span class="origin-tag" id="obj-tag">Tag</span>
+      <h3 id="obj-question" style="margin-top:5px;">Select a chapter to begin</h3>
       <div class="options-grid" id="obj-options"></div>
       
       <div id="obj-analysis" class="analysis-box">
         <h4 id="analysis-title" style="margin-top: 0;"></h4>
         <p id="analysis-text"></p>
-        <button class="action-btn" onclick="nextObjectiveQuestion()">Next Challenge ➔</button>
+        <button class="action-btn" onclick="nextObjectiveQuestion()">Next Question ➔</button>
       </div>
     </div>
   </div>
@@ -200,8 +241,8 @@
   <!-- Subjective Section -->
   <div id="subjective-section" class="hidden">
     <div class="card">
-      <span class="origin-tag" id="subj-tag">CBSE Class 12 Chemistry | 3 Marks</span>
-      <h3 id="subj-question">Loading Question...</h3>
+      <span class="origin-tag" id="subj-tag">Tag</span>
+      <h3 id="subj-question" style="margin-top:5px;">Select a chapter to begin</h3>
       
       <button class="action-btn" onclick="toggleSubjectiveAnswer()">Reveal Solution & Marking Scheme</button>
       
@@ -209,7 +250,7 @@
         <h4 style="color: var(--accent); margin-top: 0;">Official Marking Scheme (NCERT):</h4>
         <p id="subj-answer"></p>
         <button class="action-btn" onclick="rewardSubjectiveXP()">I Mastered This (+20 XP)</button>
-        <button class="action-btn" style="background: #475569; color: white;" onclick="nextSubjectiveQuestion()">Skip / Next</button>
+        <button class="action-btn" style="background: #475569; color: white;" onclick="nextSubjectiveQuestion()">Next Question</button>
       </div>
     </div>
   </div>
@@ -217,60 +258,127 @@
 </div>
 
 <script>
-  // --- Game State ---
-  let xp = 0;
-  let level = 1;
+  // --- Master Chapter Directory ---
+  const chapterData = {
+    Biology: ["Human Reproduction", "Cell: The Unit of Life", "Genetics & Evolution"],
+    Physics: ["Units and Measurements", "Electric Charges & Fields", "Work, Energy & Power"],
+    Chemistry: ["Solutions", "Chemical Bonding", "Organic Chemistry Basics"]
+  };
 
-  // --- Sample Question Database (Expandable) ---
-  const objectiveQuestions = [
+  // --- Expandable Question Bank ---
+  const objectiveDatabase = [
     {
-      question: "Which of the following hormones is not secreted by the human placenta?",
+      subject: "Biology",
+      chapter: "Human Reproduction",
+      question: "Which hormone is NOT secreted by the human placenta?",
       options: ["hCG", "Estrogens", "Progesterone", "LH"],
       correct: 3,
-      tag: "NEET 2021 | Class 12 Biology",
-      conceptMissed: "LH (Luteinizing Hormone) is secreted by the Anterior Pituitary, not the placenta. Human Placenta secretes hCG, hPL, estrogens, and progesterone."
+      tag: "NEET 2021 | Class 12 Bio",
+      concept: "LH (Luteinizing Hormone) is secreted by the Anterior Pituitary, not the placenta."
     },
     {
+      subject: "Biology",
+      chapter: "Cell: The Unit of Life",
+      question: "Which organelle is known as the powerhouse of the cell?",
+      options: ["Golgi Apparatus", "Mitochondria", "Lysosome", "Endoplasmic Reticulum"],
+      correct: 1,
+      tag: "Class 11 NCERT | Biology",
+      concept: "Mitochondria produce cellular energy in the form of ATP."
+    },
+    {
+      subject: "Physics",
+      chapter: "Units and Measurements",
       question: "Dimensions of stress are equal to that of:",
       options: ["Force", "Pressure", "Work", "Energy"],
       correct: 1,
       tag: "JEE Main 2020 | Class 11 Physics",
-      conceptMissed: "Stress = Force / Area. Pressure = Force / Area. Thus, both share the same dimensional formula [M L⁻¹ T⁻²]."
+      concept: "Both Stress and Pressure share the formula Force/Area [M L⁻¹ T⁻²]."
     }
   ];
 
-  const subjectiveQuestions = [
+  const subjectiveDatabase = [
     {
-      question: "State Raoult's Law for a solution containing non-volatile solute. Write its mathematical expression.",
-      tag: "CBSE Boards 2023 | Class 12 Chemistry",
-      answer: "• <strong>Definition (1.5 Marks):</strong> For a solution of non-volatile solutes, the relative lowering of vapor pressure is equal to the mole fraction of the solute.<br>• <strong>Mathematical Expression (1.5 Marks):</strong> (P° - P) / P° = x₂ (where x₂ is the mole fraction of solute)."
+      subject: "Chemistry",
+      chapter: "Solutions",
+      question: "State Raoult's Law for a solution containing non-volatile solute.",
+      tag: "CBSE Class 12 Chemistry | 3 Marks",
+      answer: "• <strong>Definition:</strong> Relative lowering of vapor pressure equals mole fraction of solute.<br>• <strong>Formula:</strong> (P° - P) / P° = x₂"
+    },
+    {
+      subject: "Biology",
+      chapter: "Human Reproduction",
+      question: "Describe the function of Corpus Luteum during pregnancy.",
+      tag: "CBSE Boards 2022 | Class 12 Bio",
+      answer: "• Secretes large amounts of <strong>Progesterone</strong>.<br>• Essential for maintenance of the endometrium for implantation."
     }
   ];
 
+  // --- Game State ---
+  let xp = 0;
+  let level = 1;
+  let filteredObj = [];
+  let filteredSubj = [];
   let currentObjIdx = 0;
   let currentSubjIdx = 0;
 
-  // --- Gamification Logic ---
   function addXP(points) {
     xp += points;
     if (xp >= 100) {
       level += 1;
       xp -= 100;
-      alert(`🎉 LEVEL UP! You are now Level ${level}! Keep conquering board & competitive questions!`);
+      alert(`🎉 LEVEL UP! You reached Level ${level}! Keep conquering chapter quests!`);
     }
     document.getElementById('player-xp').innerText = xp;
     document.getElementById('player-level').innerText = level;
   }
 
-  // --- Render Objective Questions ---
+  // --- Dropdown Management ---
+  function updateChapterOptions() {
+    const sub = document.getElementById('subject-select').value;
+    const chapSelect = document.getElementById('chapter-select');
+    chapSelect.innerHTML = '';
+
+    chapterData[sub].forEach(chap => {
+      const opt = document.createElement('option');
+      opt.value = chap;
+      opt.innerText = chap;
+      chapSelect.appendChild(opt);
+    });
+
+    filterQuestions();
+  }
+
+  function filterQuestions() {
+    const sub = document.getElementById('subject-select').value;
+    const chap = document.getElementById('chapter-select').value;
+
+    filteredObj = objectiveDatabase.filter(q => q.subject === sub && q.chapter === chap);
+    filteredSubj = subjectiveDatabase.filter(q => q.subject === sub && q.chapter === chap);
+
+    currentObjIdx = 0;
+    currentSubjIdx = 0;
+
+    loadObjective();
+    loadSubjective();
+  }
+
+  // --- Objective Rendering ---
   function loadObjective() {
-    const q = objectiveQuestions[currentObjIdx];
-    document.getElementById('obj-tag').innerText = q.tag;
-    document.getElementById('obj-question').innerText = q.question;
-    
+    const objSection = document.getElementById('obj-question');
     const optionsContainer = document.getElementById('obj-options');
-    optionsContainer.innerHTML = '';
     document.getElementById('obj-analysis').style.display = 'none';
+
+    if (filteredObj.length === 0) {
+      objSection.innerText = "No objective questions added for this chapter yet!";
+      optionsContainer.innerHTML = '';
+      document.getElementById('obj-tag').innerText = "Empty Quest";
+      return;
+    }
+
+    const q = filteredObj[currentObjIdx];
+    document.getElementById('obj-tag').innerText = q.tag;
+    objSection.innerText = q.question;
+    optionsContainer.innerHTML = '';
 
     q.options.forEach((opt, idx) => {
       const btn = document.createElement('button');
@@ -282,46 +390,57 @@
   }
 
   function checkObjective(selectedIdx) {
-    const q = objectiveQuestions[currentObjIdx];
+    const q = filteredObj[currentObjIdx];
     const analysisBox = document.getElementById('obj-analysis');
     const title = document.getElementById('analysis-title');
     const text = document.getElementById('analysis-text');
 
-    // Disable option buttons after picking
-    document.querySelectorAll('.option-btn').forEach(btn => btn.disabled = true);
+    document.querySelectorAll('#obj-options .option-btn').forEach(btn => btn.disabled = true);
 
     if (selectedIdx === q.correct) {
       analysisBox.className = 'analysis-box correct';
       title.innerText = "🎯 Critical Hit! Correct Answer!";
       title.style.color = "var(--correct)";
-      text.innerHTML = `<strong>Source Insight:</strong> ${q.conceptMissed}`;
+      text.innerHTML = `<strong>Source Insight:</strong> ${q.concept}`;
       addXP(25);
     } else {
       analysisBox.className = 'analysis-box wrong';
       title.innerText = "⚠️ Quest Failed! What You Missed:";
       title.style.color = "var(--wrong)";
-      text.innerHTML = `<strong>Correct Answer:</strong> Option ${String.fromCharCode(65 + q.correct)}<br><br><strong>Key Learning:</strong> ${q.conceptMissed}`;
+      text.innerHTML = `<strong>Correct Option:</strong> ${String.fromCharCode(65 + q.correct)}<br><br><strong>Key Concept:</strong> ${q.concept}`;
     }
     analysisBox.style.display = 'block';
   }
 
   function nextObjectiveQuestion() {
-    currentObjIdx = (currentObjIdx + 1) % objectiveQuestions.length;
-    loadObjective();
+    if (filteredObj.length > 0) {
+      currentObjIdx = (currentObjIdx + 1) % filteredObj.length;
+      loadObjective();
+    }
   }
 
-  // --- Render Subjective Questions ---
+  // --- Subjective Rendering ---
   function loadSubjective() {
-    const q = subjectiveQuestions[currentSubjIdx];
-    document.getElementById('subj-tag').innerText = q.tag;
-    document.getElementById('subj-question').innerText = q.question;
-    document.getElementById('subj-answer').innerHTML = q.answer;
+    const subjSection = document.getElementById('subj-question');
     document.getElementById('subj-analysis').style.display = 'none';
+
+    if (filteredSubj.length === 0) {
+      subjSection.innerText = "No subjective questions added for this chapter yet!";
+      document.getElementById('subj-tag').innerText = "Empty Quest";
+      return;
+    }
+
+    const q = filteredSubj[currentSubjIdx];
+    document.getElementById('subj-tag').innerText = q.tag;
+    subjSection.innerText = q.question;
+    document.getElementById('subj-answer').innerHTML = q.answer;
   }
 
   function toggleSubjectiveAnswer() {
-    const analysisBox = document.getElementById('subj-analysis');
-    analysisBox.style.display = analysisBox.style.display === 'none' ? 'block' : 'none';
+    if (filteredSubj.length > 0) {
+      const analysisBox = document.getElementById('subj-analysis');
+      analysisBox.style.display = analysisBox.style.display === 'none' ? 'block' : 'none';
+    }
   }
 
   function rewardSubjectiveXP() {
@@ -330,29 +449,31 @@
   }
 
   function nextSubjectiveQuestion() {
-    currentSubjIdx = (currentSubjIdx + 1) % subjectiveQuestions.length;
-    loadSubjective();
+    if (filteredSubj.length > 0) {
+      currentSubjIdx = (currentSubjIdx + 1) % filteredSubj.length;
+      loadSubjective();
+    }
   }
 
-  // --- UI Navigation ---
+  // --- UI Tabs ---
   function switchMode(mode) {
-    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    document.getElementById('tab-obj').classList.remove('active');
+    document.getElementById('tab-subj').classList.remove('active');
+
     if (mode === 'objective') {
-      event.target.classList.add('active');
+      document.getElementById('tab-obj').classList.add('active');
       document.getElementById('objective-section').classList.remove('hidden');
       document.getElementById('subjective-section').classList.add('hidden');
     } else {
-      event.target.classList.add('active');
+      document.getElementById('tab-subj').classList.add('active');
       document.getElementById('subjective-section').classList.remove('hidden');
       document.getElementById('objective-section').classList.add('hidden');
     }
   }
 
-  // --- Initialization ---
-  loadObjective();
-  loadSubjective();
+  // Initialize
+  updateChapterOptions();
 </script>
 
 </body>
-    </html>
-    
+</html>
